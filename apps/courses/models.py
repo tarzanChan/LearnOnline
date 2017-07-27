@@ -10,8 +10,8 @@ class Course(models.Model):
     detail = models.TextField(verbose_name=u"课程详情")
     degree = models.CharField(choices=(("cj", "初级"), ("zj", "中级"), ("gj", "高级")), max_length=2)
     learn_time = models.IntegerField(default=0, verbose_name=u"学习时长")
-    students = models.ImageField(default=0, verbose_name=u"学习人数")
-    fav_nums = models.ImageField(default=0, verbose_name=u"收藏")
+    students = models.IntegerField(default=0, verbose_name=u"学习人数")
+    fav_nums = models.IntegerField(default=0, verbose_name=u"收藏")
     image = models.ImageField(upload_to="courses/%Y/%m", verbose_name=u"封面", max_length=100)
     click_nums = models.IntegerField(default=0, verbose_name=u"点击数")
     add_time = models.DateTimeField(default=datetime.now, verbose_name=u"添加时间")
@@ -19,6 +19,9 @@ class Course(models.Model):
     class Meta:
         verbose_name = u"课程"
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
 
 
 class Lesson(models.Model):
@@ -29,6 +32,9 @@ class Lesson(models.Model):
     class Meta:
         verbose_name = u"章节"
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
 
 
 class Video(models.Model):
