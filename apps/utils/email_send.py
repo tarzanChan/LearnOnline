@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-__author__ = 'mengyuan'
-__date__ = '2017/8/6 13:52'
+
 from random import Random
 from django.core.mail import send_mail
 from users.models import EmailVerifyRecord
