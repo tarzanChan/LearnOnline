@@ -20,7 +20,7 @@ class CourseAdmin(object):
 
 class LessonAdmin(object):
     list_display = ['course', 'name', 'add_time']
-    search_fields = ['course', 'name']
+    search_fields = ['course__name', 'name']
     list_filter = ['course__name', 'name', 'add_time']
 
 
@@ -32,8 +32,8 @@ class VideoAdmin(object):
 
 class CourseResourceAdmin(object):
     list_display = ['course', 'name', 'download', 'add_time']
-    search_fields = ['course', 'name', 'download']
-    list_filter = ['course', 'name', 'download', 'add_time']
+    search_fields = ['course__name', 'name', 'download']
+    list_filter = ['course__name', 'name', 'download', 'add_time']
 
 
 xadmin.site.register(Course, CourseAdmin)
