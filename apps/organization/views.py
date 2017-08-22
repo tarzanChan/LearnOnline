@@ -1,10 +1,12 @@
 # _*_ encoding:utf-8 _*_
 from django.shortcuts import render
-
-# Create your views here.
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import View
 from .models import CourseOrg, CityDict
+from .forms import UserAskForm
+from django.http import HttpResponse
+# Create your views here.
+
 
 class OrgView(View):
     """
@@ -28,6 +30,13 @@ class OrgView(View):
         category = request.GET.get('ct', "")
         if category:
             all_orgs = all_orgs.filter(category=category)
+
+        sort = request.GET.get('sort', "")
+        if sort:
+            if sort == "students":
+                all_orgs = all_orgs.order_by("-students")
+            elif sort == "courses":
+                all_orgs = all_orgs.order_by("-course_nums")
 
         # 机构总数
         org_nums = all_orgs.count()
@@ -55,4 +64,22 @@ class OrgView(View):
             "filter_city": filter_city,
             "category": category,
             "hot_orgs": hot_orgs,
+            "sort": sort
         })
+
+
+class AddUserAskView(View):
+    """
+    用户添加咨询
+    """
+    def post(self, request):
+        userAskForm = UserAskForm(request.POST)
+        if userAskForm.is_valid():
+            # 注意form 和 Modelform 的区别
+            # 这里使用Modelform的save方法获取一个Model实例，并且使commit为True表示结束后会把实例保存到数据库
+            user = userAskForm.save(commit=True)
+
+            #此处需要返回JSON，做异步操作
+            return HttpResponse("{'status':'success'}", content_type='application/json')
+        else:
+            return HttpResponse("{'status':'fail', 'msg': {0}}".format(userAskForm.errors), content_type='application/json')
