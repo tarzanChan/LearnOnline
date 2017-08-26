@@ -4,8 +4,10 @@ from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import View
 from .models import CourseOrg, CityDict
 from .forms import UserAskForm
+from courses.models import Course
 from django.http import HttpResponse
 # Create your views here.
+import json
 
 
 class OrgView(View):
@@ -78,8 +80,76 @@ class AddUserAskView(View):
             # 注意form 和 Modelform 的区别
             # 这里使用Modelform的save方法获取一个Model实例，并且使commit为True表示结束后会把实例保存到数据库
             user = userAskForm.save(commit=True)
-
-            #此处需要返回JSON，做异步操作
-            return HttpResponse("{'status':'success'}", content_type='application/json')
+            suc_dict = {'status': 'success'}
+            return HttpResponse(json.dumps(suc_dict), content_type="application/json")
+            # return HttpResponse("{'status': 'success'}", content_type="application/json")
         else:
-            return HttpResponse("{'status':'fail', 'msg': {0}}".format(userAskForm.errors), content_type='application/json')
+            error_dict = {'status': 'fail', 'msg': u'填写错误'}
+            return HttpResponse(json.dumps(error_dict), content_type="application/json")
+            # return HttpResponse("{'status': 'fail', 'msg': u'填写错误'}", content_type="application/json")
+
+
+class OrgHomeView(View):
+    """
+    机构首页
+    """
+    def get(self, request, org_id):
+        current_page = "home"
+        course_org = CourseOrg.objects.get(id=int(org_id))
+        # 这里course_org的course_set方法用来获取反向内容，因为CourseOrg是Course的一个外键，所以可以通过该方法反向获取出所有的Course
+        all_courses = course_org.course_set.all()[:3]
+        all_teachers = course_org.teacher_set.all()[:1]
+        return render(request, 'org-detail-homepage.html', {
+            "all_courses": all_courses,
+            "all_teachers": all_teachers,
+            "course_org": course_org,
+            "current_page": current_page,
+        })
+
+
+class OrgCourseView(View):
+    """
+    机构课程列表页
+    """
+    def get(self, request, org_id):
+        current_page = "course"
+        course_org = CourseOrg.objects.get(id=int(org_id))
+        # 这里course_org的course_set方法用来获取反向内容，因为CourseOrg是Course的一个外键，所以可以通过该方法反向获取出所有的Course
+        all_courses = course_org.course_set.all()
+        return render(request, 'org-detail-course.html', {
+            "all_courses": all_courses,
+            "course_org": course_org,
+            "current_page": current_page,
+        })
+
+
+class OrgDescView(View):
+    """
+    机构课程列表页
+    """
+    def get(self, request, org_id):
+        current_page = "desc"
+        course_org = CourseOrg.objects.get(id=int(org_id))
+        # 这里course_org的course_set方法用来获取反向内容，因为CourseOrg是Course的一个外键，所以可以通过该方法反向获取出所有的Course
+        all_courses = course_org.course_set.all()
+        return render(request, 'org-detail-desc.html', {
+            "course_org": course_org,
+            "current_page": current_page,
+        })
+
+
+class OrgTeacherView(View):
+    """
+    机构教师页
+    """
+    def get(self, request, org_id):
+        current_page = "teacher"
+        course_org = CourseOrg.objects.get(id=int(org_id))
+        # 这里course_org的course_set方法用来获取反向内容，因为CourseOrg是Course的一个外键，所以可以通过该方法反向获取出所有的Course
+        all_courses = course_org.course_set.all()
+        all_teachers = course_org.teacher_set.all()
+        return render(request, 'org-detail-teachers.html', {
+            "all_teachers": all_teachers,
+            "course_org": course_org,
+            "current_page": current_page,
+        })
