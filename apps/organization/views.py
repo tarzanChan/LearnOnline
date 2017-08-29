@@ -7,6 +7,7 @@ from .forms import UserAskForm
 from operation.models import UserFavorite
 from courses.models import Course
 from django.http import HttpResponse
+
 # Create your views here.
 import json
 
@@ -44,10 +45,8 @@ class OrgView(View):
         # 机构总数
         org_nums = all_orgs.count()
 
-
-        #取出热门课程排序
+        # 取出热门课程排序
         hot_orgs = all_orgs.order_by("-click_nums")[:3]
-
 
         # 对课程机构进行分页
         try:
