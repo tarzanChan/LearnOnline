@@ -32,8 +32,8 @@ class UserMessageAdmin(object):
 
 class UserCourseAdmin(object):
     list_display = ['user', 'course', 'add_time']
-    search_fields = ['user', 'message']
-    list_filter = ['user', 'message', 'add_time']
+    search_fields = ['user']
+    list_filter = ['user', 'add_time']
 
 xadmin.site.register(UserAsk, UserAskAdmin)
 xadmin.site.register(CourseComments, CourseCommentsAdmin)

@@ -34,6 +34,9 @@ class CourseOrg(models.Model):
         verbose_name = u"所属机构"
         verbose_name_plural = verbose_name
 
+    def getTeacherNumber(self):
+        return self.teacher_set.all().count()
+
     def __str__(self):
         return self.name
 
