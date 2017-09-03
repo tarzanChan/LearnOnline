@@ -11,7 +11,7 @@ from .models import Course, Lesson, Video, CourseResource
 
 
 class CourseAdmin(object):
-    list_display = ['course_org', 'name', 'desc', 'detail', 'degree', 'learn_time',
+    list_display = ['name', 'desc', 'detail', 'degree', 'learn_time',
                     'students', 'fav_nums', 'image', 'click_nums', 'add_time']
     search_fields = ['course_org__name', 'name', 'desc', 'detail', 'degree', 'students', 'fav_nums', 'click_nums']
     list_filter = ['course_org__name', 'name', 'desc', 'detail', 'degree', 'learn_time',

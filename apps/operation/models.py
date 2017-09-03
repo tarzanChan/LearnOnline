@@ -20,7 +20,7 @@ class UserAsk(models.Model):
 
 class CourseComments(models.Model):
     """用户评论"""
-    user = models.ForeignKey(UserProfile, verbose_name=u"用户")
+    user = models.ForeignKey(UserProfile, verbose_name=u"用户", null=True, blank=True)
     course = models.ForeignKey(Course, verbose_name=u"课程")
     comments = models.CharField(max_length=200, verbose_name=u"评论")
     add_time = models.DateTimeField(default=datetime.now, verbose_name=u"添加时间")
@@ -63,3 +63,6 @@ class UserCourse(models.Model):
     class Meta:
         verbose_name = u"用户学习课程"
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.user.username
