@@ -7,7 +7,7 @@ from .forms import UserAskForm
 from operation.models import UserFavorite
 from courses.models import Course
 from django.http import HttpResponse
-
+from django.db.models import Q
 # Create your views here.
 import json
 
@@ -22,6 +22,12 @@ class OrgView(View):
 
         # 城市
         all_cities = CityDict.objects.all()
+
+        # 机构全局搜索
+        search_keywords = request.GET.get('keywords', "")
+        if search_keywords:
+            all_orgs = all_orgs.filter(
+                Q(name__icontains=search_keywords) | Q(desc__icontains=search_keywords))
 
         # 取出筛选城市
         # (这里因为city属于CourseOrg的一个外键，在数据库中存储的是city_id,
@@ -211,6 +217,14 @@ class TeacherListView(View):
 
         all_teachers = Teacher.objects.all()
 
+        # 教师全局搜索
+        search_keywords = request.GET.get('keywords', "")
+        if search_keywords:
+            all_teachers = all_teachers.filter(
+                Q(name__icontains=search_keywords) | Q(work_company__icontains=search_keywords) | Q(
+                    work_position__icontains=search_keywords))
+
+        # 对教师进行排序
         sort = request.GET.get('sort', "")
         if sort:
             if sort == "hot":
