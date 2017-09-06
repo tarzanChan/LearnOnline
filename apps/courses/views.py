@@ -155,3 +155,4 @@ class AddCommentsView(View):
             return HttpResponse(json.dumps(success_comment), content_type="application/json")
         else:
             return HttpResponse(json.dumps(fail_comment), content_type="application/json")
+
