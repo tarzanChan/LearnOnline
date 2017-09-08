@@ -1,4 +1,6 @@
 # _*_ encoding:utf-8 _*_
+from django.http import HttpResponse
+from django.http import HttpResponseForbidden
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.backends import ModelBackend
@@ -9,6 +11,7 @@ from .forms import LoginForm, RegisterForm, ForgetForm, ModifyPwdForm, UploadIma
 from .models import UserProfile, EmailVerifyRecord
 from utils.email_send import send_register_email
 from utils.mixin_utils import LoginRequiredMixin
+import json
 
 class ActiveUserView(View):
     """
@@ -138,7 +141,7 @@ class ForgetView(View):
 
 class ResetPasswordView(View):
     """
-    重置密码
+    重置密码请求
     """
     def get(self, request, active_code):
         all_records = EmailVerifyRecord.objects.filter(code=active_code)
@@ -152,6 +155,9 @@ class ResetPasswordView(View):
 
 
 class ModifyPasswordView(View):
+    """
+    修改用户密码执行
+    """
     def post(self, request):
         modify_form = ModifyPwdForm(request.POST)
         if modify_form.is_valid():
@@ -184,12 +190,36 @@ class UploadUserImageView(LoginRequiredMixin, View):
     上传用户头像
     """
     def post(self, request):
-
-        # 当验证通过的时候，在image_form中有一个cleaned_data,里面存放验证通过的条目
-        image_form = UploadImageForm(request.POST, request.FILES)
-        if image_form.files.values():
-            request.user.image = image_form.files
-            request.user.save()
+        form = UploadImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            m = UserProfile.objects.get(id=request.user.id)
+            m.image = form.cleaned_data['image']
+            m.save()
+            suc_dict = {'status': 'success'}
+            return HttpResponse(json.dumps(suc_dict), content_type="application/json")
         else:
-            pass
+            error_dict = {'status': 'fail', 'msg': u'填写错误'}
+            return HttpResponse(json.dumps(error_dict), content_type="application/json")
 
+
+class UpdatePwdView(View):
+    """
+    在个人中心修改用户密码执行
+    """
+    def post(self, request):
+        modify_form = ModifyPwdForm(request.POST)
+        if modify_form.is_valid():
+            password1 = request.POST.get("password1", "")
+            password2 = request.POST.get("password2", "")
+            if password1 != password2:
+                error_dict = {'status': 'fail', 'msg': u'密码不一致'}
+                return HttpResponse(json.dumps(error_dict), content_type="application/json")
+            user = request.user
+            user.password = make_password(password2)
+            user.save()
+            suc_dict = {'status': 'success'}
+            return HttpResponse(json.dumps(suc_dict), content_type="application/json")
+        else:
+            email = request.POST.get("email", "")
+            error_dict = {'status': 'fail', 'msg': u'填写错误'}
+            return HttpResponse(json.dumps(modify_form.errors), content_type="application/json")
