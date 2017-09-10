@@ -86,11 +86,11 @@
 	<div class="wp list personal_list">
 	<div class="left">
         <ul>
-            <li class="active2"><a href="usercenter-info.html">个人资料</a></li>
-            <li ><a href="usercenter-mycourse.html">我的课程</a></li>
-            <li ><a href="usercenter-fav-course.html">我的收藏</a></li>
+            <li class="active2"><a href="{% url 'user:user_info' %}">个人资料</a></li>
+            <li ><a href="{% url 'user:mycourse' %}">我的课程</a></li>
+            <li ><a href="{% url 'user:myfav_org' %}">我的收藏</a></li>
             <li >
-                <a href="usercenter-message.html" style="position: relative;">
+                <a href="{% url 'user:mymessage' %}" style="position: relative;">
                     我的消息
                 </a>
             </li>
@@ -270,7 +270,7 @@
                 data: {
                     fav_type: 1,
                     fav_id: favid,
-                    csrfmiddlewaretoken: '799Y6iPeEDNSGvrTu3noBrO4MBLv6enY'
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
                 },
                 async: true,
                 success: function(data) {
@@ -289,7 +289,7 @@
                     data: {
                         fav_type: 3,
                         fav_id: favid,
-                        csrfmiddlewaretoken: '799Y6iPeEDNSGvrTu3noBrO4MBLv6enY'
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
                     },
                     async: true,
                     success: function(data) {
@@ -297,7 +297,6 @@
                     }
                 });
         });
-
 
     $('.jsDeleteFav_org').on('click', function(){
             var _this = $(this),
@@ -309,7 +308,7 @@
                     data: {
                         fav_type: 2,
                         fav_id: favid,
-                        csrfmiddlewaretoken: '799Y6iPeEDNSGvrTu3noBrO4MBLv6enY'
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
                     },
                     async: true,
                     success: function(data) {

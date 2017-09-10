@@ -27,9 +27,12 @@
 			        </div>
                 {% else %}
                     <div class="top">
+
                         <div class="wp">
                             <div class="fl"><p>服务电话：<b>33333333</b></p></div>
+                            <div class="msg-num"><span id="MsgNum">{{ request.user.unread_nums }}</span></div>
                                 <div class="personal">
+
                                     <dl class="user fr">
                                         <dd>{{ request.user.username }}<img class="down fr" src="/static/images/top_down.png"/></dd>
                                         <dt><img width="20" height="20" src="{{ MEDIA_URL }}{{ request.user.image }}"/></dt>
