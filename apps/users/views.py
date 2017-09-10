@@ -7,11 +7,12 @@ from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
 from django.views.generic.base import View
 from django.contrib.auth.hashers import make_password
-from .forms import LoginForm, RegisterForm, ForgetForm, ModifyPwdForm, UploadImageForm
+from .forms import LoginForm, RegisterForm, ForgetForm, ModifyPwdForm, UploadImageForm, UserInfoForm
 from .models import UserProfile, EmailVerifyRecord
 from utils.email_send import send_register_email
 from utils.mixin_utils import LoginRequiredMixin
 import json
+
 
 class ActiveUserView(View):
     """
@@ -184,6 +185,16 @@ class UserinfoView(LoginRequiredMixin, View):
         return render(request, 'usercenter-info.html', {
         })
 
+    def post(self, request):
+        user_info_form = UserInfoForm(request.POST, instance=request.user)
+        if user_info_form.is_valid():
+            user_info_form.save()
+            suc_dict = {'status': 'success'}
+            return HttpResponse(json.dumps(suc_dict), content_type="application/json")
+        else:
+            # error_dict = {'status': 'fail', 'msg': u'填写错误'}
+            return HttpResponse(json.dumps(user_info_form.errors), content_type="application/json")
+
 
 class UploadUserImageView(LoginRequiredMixin, View):
     """
@@ -223,3 +234,38 @@ class UpdatePwdView(View):
             email = request.POST.get("email", "")
             error_dict = {'status': 'fail', 'msg': u'填写错误'}
             return HttpResponse(json.dumps(modify_form.errors), content_type="application/json")
+
+
+class SendEmailCodeView(LoginRequiredMixin, View):
+    """
+    发送邮箱验证码
+    """
+    def get(self, request):
+        email = request.GET.get('email', '')
+
+        if UserProfile.objects.filter(email=email):
+            suc_dict = {'email': '邮箱已经存在'}
+            return HttpResponse(json.dumps(suc_dict), content_type="application/json")
+        send_register_email(email, "update_email")
+        suc_dict = {'status': 'success'}
+        return HttpResponse(json.dumps(suc_dict), content_type="application/json")
+
+
+class UpdateEmailView(LoginRequiredMixin, View):
+    """
+    修改个人邮箱
+    """
+    def post(self, request):
+        email = request.POST.get('email', '')
+        code = request.POST.get('code', '')
+
+        existed_records = EmailVerifyRecord.objects.filter(email=email, code=code, send_type="update_email")
+        if existed_records:
+            user = request.user
+            user.email = email
+            user.save()
+            suc_dict = {'status': 'success'}
+            return HttpResponse(json.dumps(suc_dict), content_type="application/json")
+        else:
+            suc_dict = {'email': '验证码出错'}
+            return HttpResponse(json.dumps(suc_dict), content_type="application/json")
