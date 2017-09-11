@@ -2,7 +2,6 @@
 from .views import OrgView, AddUserAskView, OrgHomeView, OrgCourseView, OrgDescView, OrgTeacherView, AddFavView, TeacherListView, TeacherDetailView
 from django.conf.urls import url, include
 
-
 urlpatterns = [
     # 课程机构列表页
     url(r'^list/$', OrgView.as_view(), name="org_list"),

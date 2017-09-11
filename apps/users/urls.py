@@ -33,4 +33,6 @@ urlpatterns = [
     # 我的消息
     url(r'^mymessage/$', MyMessageView.as_view(), name='mymessage'),
 
+    
+
 ]

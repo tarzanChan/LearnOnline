@@ -1,8 +1,8 @@
 # _*_ encoding:utf-8 _*_
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.http import HttpResponseForbidden
 from django.shortcuts import render
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
 from django.views.generic.base import View
@@ -10,7 +10,7 @@ from django.contrib.auth.hashers import make_password
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 from courses.models import Course
 from .forms import LoginForm, RegisterForm, ForgetForm, ModifyPwdForm, UploadImageForm, UserInfoForm
-from .models import UserProfile, EmailVerifyRecord
+from .models import UserProfile, EmailVerifyRecord, Banner
 from utils.email_send import send_register_email
 from utils.mixin_utils import LoginRequiredMixin
 from operation.models import UserCourse, UserFavorite, UserMessage
@@ -70,6 +70,16 @@ class RegisterView(View):
             return render(request, "index.html", {})
         else:
             return render(request, "register.html", {'register_form': register_form})
+
+
+class LogoutView(View):
+    """
+    用户登出
+    """
+    def get(self, request):
+        logout(request)
+        from django.core.urlresolvers import reverse
+        return HttpResponseRedirect(reverse("index"))
 
 
 class LoginView(View):
@@ -339,6 +349,12 @@ class MyMessageView(LoginRequiredMixin, View):
     def get(self, request):
         all_messages = UserMessage.objects.filter(user=request.user.id)
 
+        # 用户进入消息中心后清空未读信息
+        all_unread_messages = UserMessage.objects.filter(user=request.user.id, has_read=False)
+        for unread_massage in all_unread_messages:
+            unread_massage.has_read = True
+            unread_massage.save()
+
         # 对我的消息进行分页
         try:
             page = request.GET.get('page', 1)
@@ -352,4 +368,23 @@ class MyMessageView(LoginRequiredMixin, View):
 
         return render(request, 'usercenter-message.html', {
             "messages": messages,
+        })
+
+
+class IndexView(View):
+    """
+    首页
+    """
+    def get(self, request):
+        # 取出轮播图
+        all_banners = Banner.objects.all().order_by('index')
+        courses = Course.objects.filter(is_banner=False)[:6]
+        banner_courses = Course.objects.filter(is_banner=True)[:3]
+        course_orgs = CourseOrg.objects.all()[:15]
+
+        return render(request, 'index.html', {
+            "all_banners": all_banners,
+            "courses": courses,
+            "banner_courses": banner_courses,
+            "course_orgs": course_orgs,
         })

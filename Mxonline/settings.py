@@ -143,6 +143,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
+STATIC_ROOT = os.path.join(BASE_DIR, "/")
 
 EMAIL_HOST = "smtp.sina.com"
 EMAIL_PORT = 25
