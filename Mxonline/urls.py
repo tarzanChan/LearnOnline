@@ -19,7 +19,7 @@ from django.conf.urls import url, include
 from django.views.generic import TemplateView
 from django.views.static import serve
 from users.views import LoginView, RegisterView, ActiveUserView, ForgetView, ResetPasswordView, ModifyPasswordView, LogoutView, IndexView
-from Mxonline.settings import MEDIA_ROOT, STATIC_ROOT
+from Mxonline.settings import MEDIA_ROOT
 import xadmin
 
 
@@ -45,7 +45,7 @@ urlpatterns = [
     url(r'^media/(?P<path>.*)', serve, {"document_root": MEDIA_ROOT}),
 
     # 配置static文件的访问处理函数
-    url(r'^static/(?P<path>.*)', serve, {"document_root": STATIC_ROOT}),
+    # url(r'^static/(?P<path>.*)', serve, {"document_root": STATIC_ROOT}),
 
     # 用户相关url配置
     url(r'^users/', include('users.urls', namespace="user")),

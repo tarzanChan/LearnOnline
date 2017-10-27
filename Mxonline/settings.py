@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.join(BASE_DIR, "extra_apps"))
 SECRET_KEY = '9$)fbqb)qdj=5vj9-3bqabaqp#g=xfokaobm4rr=-=3ngo_va!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -156,4 +156,4 @@ EMAIL_FROM = "506357902my@sina.com"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = '/media/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")

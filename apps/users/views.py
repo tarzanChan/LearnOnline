@@ -57,7 +57,7 @@ class RegisterView(View):
             user_profile = UserProfile()
             user_profile.username = user_name
             user_profile.email = user_name
-            user_profile.is_active = False
+            user_profile.is_active = True
             user_profile.password = make_password(pass_word)
             user_profile.save()
 
@@ -68,7 +68,7 @@ class RegisterView(View):
             user_massage.save()
 
             send_register_email(user_name, "register")
-            return render(request, "index.html", {})
+            return HttpResponseRedirect(reverse("index"))
         else:
             return render(request, "register.html", {'register_form': register_form})
 
@@ -108,6 +108,18 @@ class LoginView(View):
                 return render(request, "login.html", {'msg': '用户名或密码错误'})
         else:
             return render(request, "login.html", {"login_form": login_form})
+
+
+# class LoginUnsafeView(View):
+#     def get(self, request):
+#         register_form = RegisterForm()
+#         return render(request, "register.html", {'register_form': register_form})
+#
+#     def post(self, request):
+#         user_name = request.POST.get("username", "")
+#         pass_word = request.POST.get("password", "")
+#         import pymysql
+#         conn = pymysql.connect()
 
 
 # Create your views here.
@@ -378,7 +390,7 @@ class IndexView(View):
     """
     def get(self, request):
         # 取出轮播图
-        
+
         all_banners = Banner.objects.all().order_by('index')
         courses = Course.objects.filter(is_banner=False)[:6]
         banner_courses = Course.objects.filter(is_banner=True)[:3]

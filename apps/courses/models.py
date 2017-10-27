@@ -1,7 +1,8 @@
+# _*_ encoding:utf-8 _*_
 from datetime import datetime
 from django.db import models
 from organization.models import CourseOrg, Teacher
-# _*_ encoding:utf-8 _*
+
 # Create your models here.
 
 
